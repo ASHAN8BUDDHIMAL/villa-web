@@ -1,0 +1,23 @@
+[
+  {
+    "id": "deluxe-suite",
+    "name": "Deluxe Suite",
+    "price": 250,
+    "image": "https://placehold.co/800x500/e8ddd0/9a7a4a?text=Deluxe+Suite",
+    "description": "Spacious suite with ocean view and private balcony."
+  },
+  {
+    "id": "garden-room",
+    "name": "Garden Room",
+    "price": 150,
+    "image": "https://placehold.co/800x500/e8ddd0/9a7a4a?text=Garden+Room",
+    "description": "Cozy room surrounded by lush tropical gardens."
+  },
+  {
+    "id": "pool-villa",
+    "name": "Pool Villa",
+    "price": 400,
+    "image": "https://placehold.co/800x500/e8ddd0/9a7a4a?text=Pool+Villa",
+    "description": "Private villa with direct pool access."
+  }
+]
