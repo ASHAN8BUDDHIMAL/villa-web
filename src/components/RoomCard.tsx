@@ -6,7 +6,7 @@ type Room = { id: string; name: string; price: number; image: string; descriptio
 export default function RoomCard({ room }: { room: Room }) {
   return (
     <div className="group bg-white overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative overflow-hidden">
         <Image
           src={room.image}
           alt={room.name}
