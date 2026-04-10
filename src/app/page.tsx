@@ -96,7 +96,7 @@ export default function HomePage() {
         <p className="text-sand-400 text-xs tracking-[0.3em] uppercase mb-4">Ready to escape?</p>
         <h2 className="font-display text-4xl md:text-5xl text-ivory mb-6">Begin Your Journey</h2>
         <p className="text-stone-400 max-w-md mx-auto mb-10 leading-relaxed">
-          Reserve your stay at Villa Galle and experience the finest hospitality on Sri Lanka's southern coast.
+          Reserve your stay at Villa Galle and experience the finest hospitality on Sri Lanka&apos;s southern coast.
         </p>
         <Link
           href="/book"

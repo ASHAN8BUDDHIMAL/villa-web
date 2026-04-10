@@ -30,7 +30,7 @@ export default function AboutPage() {
             <p className="text-sand-500 text-xs tracking-[0.3em] uppercase mb-4">Est. 2018</p>
             <h2 className="font-display text-4xl text-stone-900 mb-6">A Labour of Love</h2>
             <p className="text-stone-600 leading-relaxed mb-4">
-              Villa Galle was born from a deep love for Sri Lanka's southern coast — its unhurried pace,
+              Villa Galle was born from a deep love for Sri Lanka&apos;s southern coast — its unhurried pace,
               its warm people, and its extraordinary natural beauty. What began as a family home was
               thoughtfully transformed into a boutique retreat that honours the spirit of the place.
             </p>

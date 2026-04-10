@@ -24,7 +24,7 @@ export default function BookingForm() {
       <div className="bg-sand-100 p-10 text-center">
         <p className="text-2xl mb-3">✉️</p>
         <p className="font-display text-xl text-stone-800 mb-2">Inquiry Received</p>
-        <p className="text-sm text-stone-500">We'll be in touch within 24 hours.</p>
+        <p className="text-sm text-stone-500">We&apos;ll be in touch within 24 hours.</p>
       </div>
     );
 

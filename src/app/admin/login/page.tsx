@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const inputCls = "w-full border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:border-sand-400 focus:bg-white transition-colors";
 
@@ -68,7 +69,7 @@ export default function AdminLoginPage() {
         </form>
 
         <p className="text-center text-xs text-stone-600 mt-6">
-          <a href="/" className="hover:text-stone-400 transition-colors">← Back to website</a>
+          <Link href="/" className="hover:text-stone-400 transition-colors">← Back to website</Link>
         </p>
       </div>
     </div>

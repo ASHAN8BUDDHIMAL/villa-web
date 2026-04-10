@@ -7,7 +7,7 @@ type User = { id: string; email: string; role: "admin" | "user" } | null;
 
 export function useAuth(options?: { required?: boolean; redirectTo?: string }) {
   const router  = useRouter();
-  const [user, setUser]       = useState<User>(undefined as any);
+  const [user, setUser]       = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export function useAuth(options?: { required?: boolean; redirectTo?: string }) {
       setLoading(false);
     }
     check();
-  }, []);
+  }, [options?.required, options?.redirectTo, router]);
 
   return { user, loading };
 }
