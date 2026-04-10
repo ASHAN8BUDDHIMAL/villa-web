@@ -10,7 +10,7 @@
   --color-sand-700:  #7D6038;
   --font-display:    Georgia, "Times New Roman", serif;
   --font-sans:       var(--font-geist-sans), system-ui, sans-serif;
-  --font-mono:       var(--font-geist-mono), monospace;
+  --font-mono:       ui-monospace, monospace;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

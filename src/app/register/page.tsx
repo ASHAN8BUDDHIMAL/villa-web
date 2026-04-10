@@ -34,8 +34,10 @@ export default function RegisterPage() {
       router.push("/");
       router.refresh();
     } else {
-      const data = await res.json();
-      setError(data.error ?? "Registration failed");
+      const text = await res.text();
+      let msg = "Registration failed";
+      try { msg = JSON.parse(text).error ?? msg; } catch {}
+      setError(msg);
       setLoading(false);
     }
   }

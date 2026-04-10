@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Menu, X, User } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { Menu, X, User, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useAuth } from '@/lib/useAuth'
 
 const links = [
   { label: 'Rooms',   href: '/rooms' },
@@ -17,8 +18,16 @@ const HIDDEN_ON = ['/login', '/register', '/admin']
 
 export function Navbar() {
   const pathname  = usePathname()
+  const router     = useRouter()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen]         = useState(false)
+  const { user } = useAuth()
+
+  async function logout() {
+    await fetch('/api/auth/logout', { method: 'POST' })
+    router.push('/login')
+    router.refresh()
+  }
 
   const hidden = HIDDEN_ON.some(p => pathname.startsWith(p))
 
@@ -62,14 +71,24 @@ export function Navbar() {
             </Link>
           ))}
 
-          {/* Login icon */}
-          <Link
-            href="/login"
-            aria-label="Sign in"
-            className={cn('transition-colors duration-300', scrolled ? 'text-stone-600 hover:text-sand-700' : 'text-ivory/80 hover:text-ivory')}
-          >
-            <User size={18} />
-          </Link>
+          {/* Auth */}
+          {user ? (
+            <button
+              onClick={logout}
+              aria-label="Sign out"
+              className={cn('flex items-center gap-1.5 text-xs tracking-widest uppercase transition-colors duration-300', scrolled ? 'text-stone-600 hover:text-red-500' : 'text-ivory/80 hover:text-ivory')}
+            >
+              <LogOut size={16} />
+            </button>
+          ) : (
+            <Link
+              href="/login"
+              aria-label="Sign in"
+              className={cn('transition-colors duration-300', scrolled ? 'text-stone-600 hover:text-sand-700' : 'text-ivory/80 hover:text-ivory')}
+            >
+              <User size={18} />
+            </Link>
+          )}
 
           <Link
             href="/book"
@@ -110,20 +129,19 @@ export function Navbar() {
               {l.label}
             </Link>
           ))}
-          <Link
-            href="/login"
-            onClick={() => setOpen(false)}
-            className="text-stone-700 tracking-widest uppercase text-sm hover:text-sand-600 transition-colors"
-          >
-            Sign In
-          </Link>
-          <Link
-            href="/register"
-            onClick={() => setOpen(false)}
-            className="text-stone-700 tracking-widest uppercase text-sm hover:text-sand-600 transition-colors"
-          >
-            Register
-          </Link>
+          {user ? (
+            <button
+              onClick={() => { setOpen(false); logout(); }}
+              className="text-left text-red-500 tracking-widest uppercase text-sm hover:text-red-700 transition-colors"
+            >
+              Sign Out
+            </button>
+          ) : (
+            <>
+              <Link href="/login" onClick={() => setOpen(false)} className="text-stone-700 tracking-widest uppercase text-sm hover:text-sand-600 transition-colors">Sign In</Link>
+              <Link href="/register" onClick={() => setOpen(false)} className="text-stone-700 tracking-widest uppercase text-sm hover:text-sand-600 transition-colors">Register</Link>
+            </>
+          )}
           <Link
             href="/book"
             onClick={() => setOpen(false)}

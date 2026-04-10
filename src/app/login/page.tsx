@@ -28,8 +28,10 @@ export default function LoginPage() {
       router.push(role === "admin" ? "/admin" : "/");
       router.refresh();
     } else {
-      const data = await res.json();
-      setError(data.error ?? "Login failed");
+      const text = await res.text();
+      let msg = "Login failed";
+      try { msg = JSON.parse(text).error ?? msg; } catch {}
+      setError(msg);
       setLoading(false);
     }
   }
