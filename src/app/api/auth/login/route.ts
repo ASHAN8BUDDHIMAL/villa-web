@@ -5,6 +5,8 @@ import { Admin } from "@/models/Admin";
 import { User } from "@/models/User";
 import { signToken, ADMIN_COOKIE, USER_COOKIE, MAX_AGE } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   const { email, password } = await req.json();
 

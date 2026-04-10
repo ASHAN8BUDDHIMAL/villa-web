@@ -1,17 +1,24 @@
 import mongoose from "mongoose";
 
-type MongooseCache = { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null };
-const cached: MongooseCache = (global as unknown as { mongoose: MongooseCache }).mongoose ?? { conn: null, promise: null };
-(global as unknown as { mongoose: MongooseCache }).mongoose = cached;
+declare global {
+  // eslint-disable-next-line no-var
+  var _mongoose: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null } | undefined;
+}
 
 export async function connectDB() {
   const MONGODB_URI = process.env.MONGODB_URI;
   if (!MONGODB_URI) throw new Error("MONGODB_URI is not set");
 
-  if (cached.conn) return cached.conn;
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(MONGODB_URI).then((m) => m);
+  if (global._mongoose?.conn) return global._mongoose.conn;
+
+  if (!global._mongoose) {
+    global._mongoose = { conn: null, promise: null };
   }
-  cached.conn = await cached.promise;
-  return cached.conn;
+
+  if (!global._mongoose.promise) {
+    global._mongoose.promise = mongoose.connect(MONGODB_URI).then((m) => m);
+  }
+
+  global._mongoose.conn = await global._mongoose.promise;
+  return global._mongoose.conn;
 }
