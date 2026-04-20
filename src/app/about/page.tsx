@@ -17,7 +17,7 @@ export default function AboutPage() {
       {/* Story */}
       <section className="bg-ivory py-24 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div className="relative aspect-[4/3] overflow-hidden">
+          <div className="relative overflow-hidden" style={{ aspectRatio: "4/3" }}>
             <Image
               src="https://placehold.co/800x600/e8ddd0/9a7a4a?text=Villa+Story"
               alt="Villa Galle story"

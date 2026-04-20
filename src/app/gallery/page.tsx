@@ -20,7 +20,7 @@ export default function GalleryPage() {
       <section className="bg-ivory py-20 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {photos.map((p, i) => (
-            <div key={i} className={`relative aspect-[4/3] overflow-hidden group ${p.span}`}>
+            <div key={i} className={`relative overflow-hidden group ${p.span}`} style={{ aspectRatio: "4/3" }}>
               <Image
                 src={p.src}
                 alt={`Villa photo ${i + 1}`}

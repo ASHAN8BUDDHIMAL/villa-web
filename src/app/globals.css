@@ -13,6 +13,9 @@
   --font-mono:       ui-monospace, monospace;
 }
 
+.aspect-4-3 { aspect-ratio: 4 / 3; }
+.aspect-video { aspect-ratio: 16 / 9; }
+
 *, *::before, *::after { box-sizing: border-box; }
 
 
