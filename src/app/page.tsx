@@ -1,16 +1,22 @@
 import Link from "next/link";
 import Image from "next/image";
-import rooms from "../../data/rooms.json";
 import RoomCard from "@/components/RoomCard";
+import { connectDB } from "@/lib/mongodb";
+import { SiteContent } from "@/models/SiteContent";
+import { Room } from "@/models/Room";
 
-const features = [
-  { icon: "🌊", title: "Ocean Views",      desc: "Wake up to the sound of waves and panoramic Indian Ocean vistas." },
-  { icon: "🌿", title: "Tropical Gardens", desc: "Lush private gardens with native flora surrounding every corner." },
-  { icon: "🍽️", title: "Private Dining",   desc: "Bespoke dining experiences crafted by our in-house chef." },
-  { icon: "🧘", title: "Wellness",          desc: "Yoga pavilion, spa treatments and infinity pool at your leisure." },
-];
+async function getContent() {
+  await connectDB();
+  const content = await SiteContent.findOne().lean();
+  if (content) return content;
+  return (await SiteContent.create({})).toObject();
+}
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [c, rooms] = await Promise.all([
+    getContent(),
+    (async () => { await connectDB(); return Room.find().lean(); })()
+  ]);
   return (
     <>
       {/* Hero */}
@@ -26,12 +32,12 @@ export default function HomePage() {
           />
         </div>
         <div className="relative z-10 text-center px-6 max-w-3xl mx-auto">
-          <p className="text-sand-300 text-xs tracking-[0.4em] uppercase mb-6">Southern Coast · Sri Lanka</p>
+          <p className="text-sand-300 text-xs tracking-[0.4em] uppercase mb-6">{c.hero.tagline}</p>
           <h1 className="font-display text-5xl md:text-7xl text-ivory leading-tight mb-6">
-            Villa Galle
+            {c.hero.title}
           </h1>
           <p className="text-ivory/70 text-lg md:text-xl leading-relaxed mb-10 max-w-xl mx-auto">
-            A boutique luxury retreat where the Indian Ocean meets tropical serenity.
+            {c.hero.subtitle}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
@@ -62,7 +68,7 @@ export default function HomePage() {
             <h2 className="font-display text-4xl text-stone-900">Life at Villa Galle</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map(f => (
+            {c.features.map((f: { icon: string; title: string; desc: string }) => (
               <div key={f.title} className="text-center p-6">
                 <div className="text-4xl mb-4">{f.icon}</div>
                 <h3 className="font-display text-lg text-stone-800 mb-2">{f.title}</h3>
@@ -86,7 +92,7 @@ export default function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rooms.map(room => <RoomCard key={room.id} room={room} />)}
+            {rooms.map(room => <RoomCard key={String(room._id)} room={room as never} />)}
           </div>
         </div>
       </section>
@@ -94,9 +100,9 @@ export default function HomePage() {
       {/* CTA */}
       <section className="bg-stone-900 py-24 px-6 text-center">
         <p className="text-sand-400 text-xs tracking-[0.3em] uppercase mb-4">Ready to escape?</p>
-        <h2 className="font-display text-4xl md:text-5xl text-ivory mb-6">Begin Your Journey</h2>
+        <h2 className="font-display text-4xl md:text-5xl text-ivory mb-6">{c.cta.title}</h2>
         <p className="text-stone-400 max-w-md mx-auto mb-10 leading-relaxed">
-          Reserve your stay at Villa Galle and experience the finest hospitality on Sri Lanka&apos;s southern coast.
+          {c.cta.subtitle}
         </p>
         <Link
           href="/book"

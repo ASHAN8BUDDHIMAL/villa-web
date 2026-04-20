@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-type Room = { id: string; name: string; price: number; image: string; description: string };
+type Room = { _id: string; name: string; price: number; image: string; description: string };
 
 export default function RoomCard({ room }: { room: Room }) {
   return (

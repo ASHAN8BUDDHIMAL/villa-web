@@ -24,8 +24,7 @@ export default function LoginPage() {
     });
 
     if (res.ok) {
-      const { role } = await res.json();
-      router.push(role === "admin" ? "/admin" : "/");
+      router.push("/admin");
       router.refresh();
     } else {
       const text = await res.text();
