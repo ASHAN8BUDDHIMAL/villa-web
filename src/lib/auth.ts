@@ -1,10 +1,9 @@
 import jwt from "jsonwebtoken";
 
-export const ADMIN_COOKIE = "admin_token";
-export const USER_COOKIE  = "user_token";
-export const MAX_AGE      = 60 * 60 * 8; // 8 hours
+export const USER_COOKIE = "user_token";
+export const MAX_AGE     = 60 * 60 * 8; // 8 hours
 
-export type JwtPayload = { id: string; email: string; role: "admin" | "user" };
+export type JwtPayload = { id: string; email: string };
 
 function getSecret() {
   const secret = process.env.JWT_SECRET;
@@ -23,5 +22,3 @@ export function verifyToken(token: string): JwtPayload | null {
     return null;
   }
 }
-
-export const COOKIE = ADMIN_COOKIE;

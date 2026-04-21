@@ -18,11 +18,18 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await connectDB();
-  const body = await req.json();
-  let content = await SiteContent.findOne();
-  if (!content) content = await SiteContent.create(body);
-  else { Object.assign(content, body); await content.save(); }
-
-  return NextResponse.json(content);
+  try {
+    await connectDB();
+    const body = await req.json();
+    const { _id, __v, createdAt, updatedAt, ...data } = body;
+    const content = await SiteContent.findOneAndUpdate(
+      {},
+      { $set: data },
+      { new: true, upsert: true }
+    );
+    return NextResponse.json(content);
+  } catch (err) {
+    console.error("[site-content PUT] error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }

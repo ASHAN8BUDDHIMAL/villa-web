@@ -12,23 +12,28 @@ export async function POST(req: NextRequest) {
   if (!name || !email || !password)
     return NextResponse.json({ error: "All fields are required" }, { status: 400 });
 
-  await connectDB();
+  try {
+    await connectDB();
 
-  if (await User.findOne({ email }))
-    return NextResponse.json({ error: "Email already registered" }, { status: 409 });
+    if (await User.findOne({ email }))
+      return NextResponse.json({ error: "Email already registered" }, { status: 409 });
 
-  const hash = await bcrypt.hash(password, 12);
-  const user = await User.create({ name, email, password: hash });
+    const hash = await bcrypt.hash(password, 12);
+    const user = await User.create({ name, email, password: hash });
 
-  const token = signToken({ id: user._id.toString(), email: user.email, role: "user" });
+    const token = signToken({ id: user._id.toString(), email: user.email });
 
-  const res = NextResponse.json({ success: true });
-  res.cookies.set(USER_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: MAX_AGE,
-    path: "/",
-  });
-  return res;
+    const res = NextResponse.json({ success: true });
+    res.cookies.set(USER_COOKIE, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: MAX_AGE,
+      path: "/",
+    });
+    return res;
+  } catch (err) {
+    console.error("[register] error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }

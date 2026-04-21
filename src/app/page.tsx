@@ -2,21 +2,22 @@ import Link from "next/link";
 import Image from "next/image";
 import RoomCard from "@/components/RoomCard";
 import { connectDB } from "@/lib/mongodb";
-import { SiteContent } from "@/models/SiteContent";
 import { Room } from "@/models/Room";
+import { SiteContent } from "@/models/SiteContent";
 
-async function getContent() {
-  await connectDB();
-  const content = await SiteContent.findOne().lean();
-  if (content) return content;
-  return (await SiteContent.create({})).toObject();
-}
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [c, rooms] = await Promise.all([
-    getContent(),
-    (async () => { await connectDB(); return Room.find().lean(); })()
+  await connectDB();
+  const [rooms, content] = await Promise.all([
+    Room.find().lean(),
+    SiteContent.findOne().lean(),
   ]);
+
+  const hero     = content?.hero     ?? { tagline: "Southern Coast · Sri Lanka", title: "Villa Galle", subtitle: "A boutique luxury retreat where the Indian Ocean meets tropical serenity." };
+  const features = content?.features ?? [];
+  const cta      = content?.cta      ?? { title: "Begin Your Journey", subtitle: "Reserve your stay at Villa Galle and experience the finest hospitality on Sri Lanka's southern coast." };
+
   return (
     <>
       {/* Hero */}
@@ -32,24 +33,18 @@ export default async function HomePage() {
           />
         </div>
         <div className="relative z-10 text-center px-6 max-w-3xl mx-auto">
-          <p className="text-sand-300 text-xs tracking-[0.4em] uppercase mb-6">{c.hero.tagline}</p>
+          <p className="text-sand-300 text-xs tracking-[0.4em] uppercase mb-6">{hero.tagline}</p>
           <h1 className="font-display text-5xl md:text-7xl text-ivory leading-tight mb-6">
-            {c.hero.title}
+            {hero.title}
           </h1>
           <p className="text-ivory/70 text-lg md:text-xl leading-relaxed mb-10 max-w-xl mx-auto">
-            {c.hero.subtitle}
+            {hero.subtitle}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/book"
-              className="px-8 py-3.5 bg-sand-600 text-ivory text-sm tracking-widest uppercase hover:bg-sand-700 transition-colors"
-            >
+            <Link href="/book" className="px-8 py-3.5 bg-sand-600 text-ivory text-sm tracking-widest uppercase hover:bg-sand-700 transition-colors">
               Book Your Stay
             </Link>
-            <Link
-              href="/rooms"
-              className="px-8 py-3.5 border border-ivory/50 text-ivory text-sm tracking-widest uppercase hover:bg-ivory/10 transition-colors"
-            >
+            <Link href="/rooms" className="px-8 py-3.5 border border-ivory/50 text-ivory text-sm tracking-widest uppercase hover:bg-ivory/10 transition-colors">
               Explore Rooms
             </Link>
           </div>
@@ -68,7 +63,7 @@ export default async function HomePage() {
             <h2 className="font-display text-4xl text-stone-900">Life at Villa Galle</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {c.features.map((f: { icon: string; title: string; desc: string }) => (
+            {features.map((f: { icon: string; title: string; desc: string }) => (
               <div key={f.title} className="text-center p-6">
                 <div className="text-4xl mb-4">{f.icon}</div>
                 <h3 className="font-display text-lg text-stone-800 mb-2">{f.title}</h3>
@@ -92,7 +87,7 @@ export default async function HomePage() {
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rooms.map(room => <RoomCard key={String(room._id)} room={room as never} />)}
+            {rooms.map(room => <RoomCard key={String(room._id)} room={{ ...room, _id: String(room._id) }} />)}
           </div>
         </div>
       </section>
@@ -100,14 +95,11 @@ export default async function HomePage() {
       {/* CTA */}
       <section className="bg-stone-900 py-24 px-6 text-center">
         <p className="text-sand-400 text-xs tracking-[0.3em] uppercase mb-4">Ready to escape?</p>
-        <h2 className="font-display text-4xl md:text-5xl text-ivory mb-6">{c.cta.title}</h2>
+        <h2 className="font-display text-4xl md:text-5xl text-ivory mb-6">{cta.title}</h2>
         <p className="text-stone-400 max-w-md mx-auto mb-10 leading-relaxed">
-          {c.cta.subtitle}
+          {cta.subtitle}
         </p>
-        <Link
-          href="/book"
-          className="inline-block px-10 py-4 bg-sand-600 text-ivory text-sm tracking-widest uppercase hover:bg-sand-700 transition-colors"
-        >
+        <Link href="/book" className="inline-block px-10 py-4 bg-sand-600 text-ivory text-sm tracking-widest uppercase hover:bg-sand-700 transition-colors">
           Book Now
         </Link>
       </section>

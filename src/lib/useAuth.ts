@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-type User = { id: string; email: string; role: "admin" | "user" } | null;
+type User = { id: string; email: string } | null;
 
 export function useAuth(options?: { required?: boolean; redirectTo?: string }) {
   const router  = useRouter();

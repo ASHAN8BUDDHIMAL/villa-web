@@ -7,25 +7,37 @@ import { signToken, USER_COOKIE, MAX_AGE } from "@/lib/auth";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
-  const { email, password } = await req.json();
+  try {
+    const { email, password } = await req.json();
 
-  if (!email || !password)
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    if (!email || !password)
+      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
-  await connectDB();
+    await connectDB();
+    console.log("[login] DB connected, looking for:", email);
 
-  const user = await User.findOne({ email });
-  if (!user || !(await bcrypt.compare(password, user.password)))
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    const user = await User.findOne({ email });
+    console.log("[login] user found:", !!user);
 
-  const token = signToken({ id: user._id.toString(), email: user.email, role: "user" });
-  const res = NextResponse.json({ success: true });
-  res.cookies.set(USER_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: MAX_AGE,
-    path: "/",
-  });
-  return res;
+    if (!user) return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+
+    const match = await bcrypt.compare(password, user.password);
+    console.log("[login] password match:", match);
+
+    if (!match) return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+
+    const token = signToken({ id: user._id.toString(), email: user.email });
+    const res = NextResponse.json({ success: true });
+    res.cookies.set(USER_COOKIE, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: MAX_AGE,
+      path: "/",
+    });
+    return res;
+  } catch (err) {
+    console.error("[login] error:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }

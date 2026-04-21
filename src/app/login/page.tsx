@@ -24,8 +24,7 @@ export default function LoginPage() {
     });
 
     if (res.ok) {
-      router.push("/admin");
-      router.refresh();
+      window.location.href = "/admin/settings";
     } else {
       const text = await res.text();
       let msg = "Login failed";
