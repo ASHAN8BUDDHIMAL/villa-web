@@ -7,16 +7,29 @@ import { SiteContent } from "@/models/SiteContent";
 
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
-  await connectDB();
-  const [rooms, content] = await Promise.all([
-    Room.find().lean(),
-    SiteContent.findOne().lean(),
-  ]);
+const defaultHero     = { tagline: "Southern Coast · Sri Lanka", title: "Villa Galle", subtitle: "A boutique luxury retreat where the Indian Ocean meets tropical serenity." };
+const defaultFeatures: { icon: string; title: string; desc: string }[] = [];
+const defaultCta      = { title: "Begin Your Journey", subtitle: "Reserve your stay at Villa Galle and experience the finest hospitality on Sri Lanka's southern coast." };
 
-  const hero     = content?.hero     ?? { tagline: "Southern Coast · Sri Lanka", title: "Villa Galle", subtitle: "A boutique luxury retreat where the Indian Ocean meets tropical serenity." };
-  const features = content?.features ?? [];
-  const cta      = content?.cta      ?? { title: "Begin Your Journey", subtitle: "Reserve your stay at Villa Galle and experience the finest hospitality on Sri Lanka's southern coast." };
+export default async function HomePage() {
+  let rooms: { _id: unknown; name: string; price: number; image: string; description: string }[] = [];
+  let hero     = defaultHero;
+  let features = defaultFeatures;
+  let cta      = defaultCta;
+
+  try {
+    await connectDB();
+    const [dbRooms, content] = await Promise.all([
+      Room.find().lean(),
+      SiteContent.findOne().lean(),
+    ]);
+    rooms    = dbRooms as typeof rooms;
+    hero     = content?.hero     ?? defaultHero;
+    features = content?.features ?? defaultFeatures;
+    cta      = content?.cta      ?? defaultCta;
+  } catch {
+    // DB unavailable — render with fallback defaults
+  }
 
   return (
     <>

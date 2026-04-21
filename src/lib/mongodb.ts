@@ -16,7 +16,10 @@ export async function connectDB() {
   }
 
   if (!global._mongoose.promise) {
-    global._mongoose.promise = mongoose.connect(MONGODB_URI).then((m) => m);
+    global._mongoose.promise = mongoose.connect(MONGODB_URI).catch((err) => {
+      global._mongoose!.promise = null; // clear so next request retries
+      throw err;
+    });
   }
 
   global._mongoose.conn = await global._mongoose.promise;

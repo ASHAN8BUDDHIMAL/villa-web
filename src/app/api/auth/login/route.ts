@@ -14,16 +14,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
     await connectDB();
-    console.log("[login] DB connected, looking for:", email);
 
     const user = await User.findOne({ email });
-    console.log("[login] user found:", !!user);
-
     if (!user) return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
 
     const match = await bcrypt.compare(password, user.password);
-    console.log("[login] password match:", match);
-
     if (!match) return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
 
     const token = signToken({ id: user._id.toString(), email: user.email });

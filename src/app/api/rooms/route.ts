@@ -16,8 +16,13 @@ export async function POST(req: NextRequest) {
   if (!token || !verifyToken(token))
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  await connectDB();
-  const body = await req.json();
-  const room = await Room.create(body);
-  return NextResponse.json(room, { status: 201 });
+  try {
+    await connectDB();
+    const body = await req.json();
+    const room = await Room.create(body);
+    return NextResponse.json(room, { status: 201 });
+  } catch (err) {
+    console.error("[rooms POST] error:", err);
+    return NextResponse.json({ error: "Failed to create room" }, { status: 500 });
+  }
 }
