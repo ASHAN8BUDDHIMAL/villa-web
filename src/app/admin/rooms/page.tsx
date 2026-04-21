@@ -30,6 +30,8 @@ export default function AdminRoomsPage() {
   function cancel() { setEditing(null); setForm(empty); }
 
   async function save() {
+    if (!form.name || !form.image || !form.description || !form.price)
+      return setMsg("All fields are required.");
     const url    = editing ? `/api/rooms/${editing}` : "/api/rooms";
     const method = editing ? "PUT" : "POST";
     const res    = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
@@ -83,7 +85,7 @@ export default function AdminRoomsPage() {
               {editing ? "Update Room" : "Add Room"}
             </button>
             {editing && <button onClick={cancel} className="px-6 py-2.5 border border-stone-200 text-stone-500 text-xs tracking-widest uppercase hover:bg-stone-50 transition-colors">Cancel</button>}
-            {msg && <p className="text-xs text-green-600">{msg}</p>}
+            {msg && <p className={`text-xs ${msg.includes("required") || msg === "Failed." ? "text-red-500" : "text-green-600"}`}>{msg}</p>}
           </div>
         </section>
 

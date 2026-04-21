@@ -24,6 +24,8 @@ export default function AdminGalleryPage() {
 
   async function add() {
     if (!form.url) return setMsg("Image URL is required.");
+    if (!form.url.startsWith('http://') && !form.url.startsWith('https://'))
+      return setMsg("Please enter a valid URL starting with http:// or https://");
     const res = await fetch("/api/gallery", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -74,26 +76,33 @@ export default function AdminGalleryPage() {
             <button onClick={add} className="px-6 py-2.5 bg-sand-600 text-ivory text-xs tracking-widest uppercase hover:bg-sand-700 transition-colors">
               Add Photo
             </button>
-            {msg && <p className="text-xs text-green-600">{msg}</p>}
+            {msg && <p className={`text-xs ${msg.includes("added") ? "text-green-600" : "text-red-500"}`}>{msg}</p>}
           </div>
         </section>
 
         {/* Photo grid */}
         <section className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {photos.length === 0 && <p className="text-sm text-stone-400 col-span-3">No photos yet.</p>}
-          {photos.map(photo => (
-            <div key={photo._id} className="relative group bg-white border border-stone-200 overflow-hidden">
-              <div className="relative aspect-square">
-                <Image src={photo.url} alt={photo.caption} fill className="object-cover" sizes="33vw" />
+          {photos.map(photo => {
+            const isValidUrl = photo.url && (photo.url.startsWith('http://') || photo.url.startsWith('https://'));
+            return (
+              <div key={photo._id} className="relative group bg-white border border-stone-200 overflow-hidden">
+                <div className="relative aspect-square bg-stone-100 flex items-center justify-center">
+                  {isValidUrl ? (
+                    <Image src={photo.url} alt={photo.caption} fill className="object-cover" sizes="33vw" />
+                  ) : (
+                    <p className="text-xs text-stone-400">Invalid URL</p>
+                  )}
+                </div>
+                <div className="p-2 flex items-center justify-between">
+                  <p className="text-xs text-stone-500 truncate">{photo.caption || "No caption"}</p>
+                  <button onClick={() => remove(photo._id)} className="text-xs text-red-400 hover:text-red-600 tracking-widest uppercase transition-colors ml-2 shrink-0">
+                    Delete
+                  </button>
+                </div>
               </div>
-              <div className="p-2 flex items-center justify-between">
-                <p className="text-xs text-stone-500 truncate">{photo.caption || "No caption"}</p>
-                <button onClick={() => remove(photo._id)} className="text-xs text-red-400 hover:text-red-600 tracking-widest uppercase transition-colors ml-2 shrink-0">
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </section>
       </main>
     </div>
