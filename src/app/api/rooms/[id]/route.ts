@@ -10,16 +10,18 @@ function auth(req: NextRequest) {
   return token && verifyToken(token);
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!auth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { id } = await params;
   await connectDB();
-  const room = await Room.findByIdAndUpdate(params.id, await req.json(), { new: true });
+  const room = await Room.findByIdAndUpdate(id, await req.json(), { new: true });
   return NextResponse.json(room);
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!auth(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const { id } = await params;
   await connectDB();
-  await Room.findByIdAndDelete(params.id);
+  await Room.findByIdAndDelete(id);
   return NextResponse.json({ success: true });
 }
