@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 
-const inputCls = "w-full border border-stone-200 bg-white px-4 py-3 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:border-sand-400 transition-colors";
+const inputCls = "w-full border border-stone-200 bg-white px-6 py-5 text-base text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-sand-400 focus:ring-2 focus:ring-sand-400/20 transition-all duration-300 rounded-sm";
+const labelCls = "text-xs text-stone-400 tracking-[0.2em] uppercase mb-2 block";
 
 export default function BookingForm() {
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
@@ -21,44 +22,46 @@ export default function BookingForm() {
 
   if (status === "sent")
     return (
-      <div className="bg-sand-100 p-10 text-center">
-        <p className="text-2xl mb-3">✉️</p>
-        <p className="font-display text-xl text-stone-800 mb-2">Inquiry Received</p>
-        <p className="text-sm text-stone-500">We&apos;ll be in touch within 24 hours.</p>
+      <div className="bg-sand-100 p-16 text-center">
+        <div className="w-14 h-px bg-sand-400 mx-auto mb-10" />
+        <p className="font-display text-3xl text-stone-800 mb-4">Inquiry Received</p>
+        <p className="text-lg text-stone-400 leading-relaxed max-w-xs mx-auto">Thank you. Our team will be in touch within 24 hours with availability and details.</p>
       </div>
     );
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <input name="name"  placeholder="Full name"  required className={inputCls} />
-        <input name="email" type="email" placeholder="Email address" required className={inputCls} />
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-stone-400 tracking-widest uppercase">Check-in</label>
-          <input name="checkIn"  type="date" required className={inputCls} />
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label className={labelCls}>Check-in</label>
+          <input name="checkIn" type="date" required className={inputCls} />
         </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-xs text-stone-400 tracking-widest uppercase">Check-out</label>
+        <div>
+          <label className={labelCls}>Check-out</label>
           <input name="checkOut" type="date" required className={inputCls} />
         </div>
       </div>
-      <select name="room" className={inputCls}>
-        <option value="">Select a room (optional)</option>
-        <option value="deluxe-suite">Deluxe Suite — $250/night</option>
-        <option value="garden-room">Garden Room — $150/night</option>
-        <option value="pool-villa">Pool Villa — $400/night</option>
-      </select>
-      <textarea name="message" placeholder="Special requests or questions…" rows={4} required className={inputCls} />
+      <div>
+        <label className={labelCls}>Room Preference</label>
+        <select name="room" className={inputCls}>
+          <option value="">No preference</option>
+          <option value="deluxe-suite">Deluxe Suite — $250 / night</option>
+          <option value="garden-room">Garden Room — $150 / night</option>
+          <option value="pool-villa">Pool Villa — $400 / night</option>
+        </select>
+      </div>
+      <div>
+        <label className={labelCls}>Message</label>
+        <textarea name="message" placeholder="Special requests or questions…" rows={6} required className={inputCls} />
+      </div>
       <button
         type="submit"
         disabled={status === "sending"}
-        className="w-full py-4 bg-sand-600 text-ivory text-sm tracking-widest uppercase hover:bg-sand-700 transition-colors disabled:opacity-50"
+        className="w-full py-5 bg-sand-600 text-ivory text-sm tracking-[0.25em] uppercase hover:bg-sand-700 transition-all duration-500 disabled:opacity-50 mt-2"
       >
         {status === "sending" ? "Sending…" : "Send Inquiry"}
       </button>
-      {status === "error" && <p className="text-red-500 text-sm text-center">Something went wrong. Please try again.</p>}
+      {status === "error" && <p className="text-red-400 text-xs text-center tracking-wide">Something went wrong. Please try again.</p>}
     </form>
   );
 }

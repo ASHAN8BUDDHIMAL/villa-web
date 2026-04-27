@@ -1,23 +1,25 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-ivory:     #FDFAF5;
-  --color-sand-100:  #F0E9DC;
-  --color-sand-200:  #E0D0B8;
-  --color-sand-400:  #C4A882;
-  --color-sand-500:  #B09060;
-  --color-sand-600:  #9A7A4A;
-  --color-sand-700:  #7D6038;
-  --font-display:    Georgia, "Times New Roman", serif;
-  --font-sans:       var(--font-geist-sans), system-ui, sans-serif;
-  --font-mono:       ui-monospace, monospace;
+  --color-ivory:        #FDFAF5;
+  --color-sand-100:     #F4ECE2;
+  --color-sand-200:     #E8D8C3;
+  --color-sand-400:     #C9A97E;
+  --color-sand-500:     #B09060;
+  --color-sand-600:     #9A7A4A;
+  --color-sand-700:     #7A5C38;
+  --color-ocean-muted:  #6F8F8B;
+  --font-display:       Georgia, "Times New Roman", serif;
+  --font-sans:          var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono:          ui-monospace, monospace;
 }
 
-.aspect-4-3 { aspect-ratio: 4 / 3; }
+.aspect-4-3  { aspect-ratio: 4 / 3; }
 .aspect-video { aspect-ratio: 16 / 9; }
 
 *, *::before, *::after { box-sizing: border-box; }
 
+html { scroll-behavior: smooth; }
 
 body {
   background: var(--color-ivory);
@@ -31,6 +33,6 @@ body {
   color: #1c1917;
 }
 
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--color-sand-100); }
-::-webkit-scrollbar-thumb { background: var(--color-sand-400); border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: var(--color-sand-400); border-radius: 4px; }

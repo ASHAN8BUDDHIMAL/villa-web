@@ -6,19 +6,21 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Menu, X, User, LogOut } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/lib/useAuth'
+import VillaLogo from '@/components/VillaLogo'
 
 const links = [
-  { label: 'Rooms',   href: '/rooms' },
-  { label: 'Gallery', href: '/gallery' },
-  { label: 'About',   href: '/about' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'Rooms',   href: '/#rooms' },
+  { label: 'About',   href: '/#about' },
+  { label: 'Gallery', href: '/#gallery' },
+ 
+  // { label: 'Contact', href: '/#contact' },
 ]
 
 const HIDDEN_ON = ['/login', '/register', '/admin']
 
 export function Navbar() {
-  const pathname  = usePathname()
-  const router     = useRouter()
+  const pathname = usePathname()
+  const router   = useRouter()
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen]         = useState(false)
   const { user } = useAuth()
@@ -41,90 +43,100 @@ export function Navbar() {
 
   return (
     <header className={cn(
-      'fixed top-0 inset-x-0 z-50 transition-all duration-500',
-      scrolled ? 'bg-ivory/95 backdrop-blur-md shadow-sm border-b border-sand-100' : 'bg-transparent'
+      'fixed top-0 inset-x-0 z-50 transition-all duration-700',
+      scrolled
+        ? 'bg-ivory/80 backdrop-blur-md shadow-sm border-b border-sand-100/60'
+        : 'bg-transparent'
     )}>
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 h-20 flex items-center justify-between">
 
         {/* Logo */}
-        <Link href="/" className="flex flex-col leading-none">
-          <span className={cn('font-display text-2xl tracking-wide transition-colors duration-300', scrolled ? 'text-stone-900' : 'text-ivory')}>
-            Villa Galle
-          </span>
-          <span className={cn('font-mono text-[10px] tracking-[0.25em] uppercase transition-colors duration-300', scrolled ? 'text-sand-500' : 'text-sand-200')}>
-            Southern Coast · Sri Lanka
-          </span>
+        <Link href="/" aria-label="Villa Galle home">
+          {scrolled ? (
+            <VillaLogo color="#1A4480" textColor="#0F2340" subColor="#5B82B8" size={40} />
+          ) : (
+            <VillaLogo color="#FFFFFF" textColor="#FFFFFF" subColor="#ADBFDF" size={40} />
+          )}
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-10">
           {links.map(l => (
             <Link
               key={l.href}
               href={l.href}
               className={cn(
-                'text-sm tracking-widest uppercase relative after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-sand-400 after:transition-all after:duration-300 hover:after:w-full transition-colors duration-300',
-                scrolled ? 'text-stone-700 hover:text-sand-700' : 'text-ivory/80 hover:text-ivory'
+                'text-base font-bold tracking-[0.2em] uppercase relative pb-0.5',
+                'after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:transition-all after:duration-500',
+                scrolled
+                  ? 'text-stone-600 hover:text-stone-900 after:bg-sand-500'
+                  : 'text-ivory/75 hover:text-ivory after:bg-sand-300',
+                pathname === l.href && (scrolled ? 'text-stone-900 after:w-full' : 'text-ivory after:w-full')
               )}
             >
               {l.label}
             </Link>
           ))}
 
-          {/* Auth */}
           {user ? (
             <button
               onClick={logout}
               aria-label="Sign out"
-              className={cn('flex items-center gap-1.5 text-xs tracking-widest uppercase transition-colors duration-300', scrolled ? 'text-stone-600 hover:text-red-500' : 'text-ivory/80 hover:text-ivory')}
+              className={cn(
+                'transition-colors duration-300',
+                scrolled ? 'text-stone-500 hover:text-red-400' : 'text-ivory/70 hover:text-ivory'
+              )}
             >
-              <LogOut size={16} />
+              <LogOut size={15} />
             </button>
           ) : (
             <Link
               href="/login"
               aria-label="Sign in"
-              className={cn('transition-colors duration-300', scrolled ? 'text-stone-600 hover:text-sand-700' : 'text-ivory/80 hover:text-ivory')}
+              className={cn(
+                'transition-colors duration-300',
+                scrolled ? 'text-stone-500 hover:text-sand-600' : 'text-ivory/70 hover:text-ivory'
+              )}
             >
-              <User size={18} />
+              <User size={16} />
             </Link>
           )}
 
-          <Link
-            href="/book"
+          <a
+            href="/#contact"
             className={cn(
-              'ml-2 px-6 py-2.5 text-xs tracking-widest uppercase font-medium border transition-all duration-300',
+              'ml-2 px-8 py-3 rounded-full text-base font-bold tracking-[0.2em] uppercase transition-all duration-500',
               scrolled
-                ? 'border-sand-600 text-sand-700 hover:bg-sand-600 hover:text-ivory'
-                : 'border-ivory/60 text-ivory hover:bg-ivory hover:text-stone-900'
+                ? 'bg-sand-600 text-ivory hover:bg-sand-700 shadow-sm hover:shadow-md'
+                : 'border border-ivory/50 text-ivory hover:bg-ivory hover:text-stone-900'
             )}
           >
-            Book Now
-          </Link>
+            Contact Us
+          </a>
         </nav>
 
         {/* Mobile toggle */}
         <button
           onClick={() => setOpen(v => !v)}
-          className={cn('md:hidden p-2 transition-colors', scrolled ? 'text-stone-800' : 'text-ivory')}
+          className={cn('md:hidden p-2 transition-colors duration-300', scrolled ? 'text-stone-800' : 'text-ivory')}
           aria-label="Toggle menu"
         >
-          {open ? <X size={22} /> : <Menu size={22} />}
+          {open ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
 
       {/* Mobile menu */}
       <div className={cn(
-        'md:hidden bg-ivory border-t border-sand-100 overflow-hidden transition-all duration-500',
+        'md:hidden bg-ivory/95 backdrop-blur-md border-t border-sand-100 overflow-hidden transition-all duration-500',
         open ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
       )}>
-        <nav className="flex flex-col px-6 py-6 gap-5">
+        <nav className="flex flex-col px-8 py-8 gap-6">
           {links.map(l => (
             <Link
               key={l.href}
               href={l.href}
               onClick={() => setOpen(false)}
-              className="text-stone-700 tracking-widest uppercase text-sm hover:text-sand-600 transition-colors"
+              className="text-lg font-bold text-stone-700 tracking-[0.2em] uppercase hover:text-sand-600 transition-colors duration-300"
             >
               {l.label}
             </Link>
@@ -132,23 +144,23 @@ export function Navbar() {
           {user ? (
             <button
               onClick={() => { setOpen(false); logout(); }}
-              className="text-left text-red-500 tracking-widest uppercase text-sm hover:text-red-700 transition-colors"
+              className="text-left text-red-400 tracking-[0.2em] uppercase text-lg font-bold hover:text-red-600 transition-colors"
             >
               Sign Out
             </button>
           ) : (
             <>
-              <Link href="/login" onClick={() => setOpen(false)} className="text-stone-700 tracking-widest uppercase text-sm hover:text-sand-600 transition-colors">Sign In</Link>
-              <Link href="/register" onClick={() => setOpen(false)} className="text-stone-700 tracking-widest uppercase text-sm hover:text-sand-600 transition-colors">Register</Link>
+              <Link href="/login" onClick={() => setOpen(false)} className="text-stone-700 tracking-[0.2em] uppercase text-lg font-bold hover:text-sand-600 transition-colors">Sign In</Link>
+              <Link href="/register" onClick={() => setOpen(false)} className="text-stone-700 tracking-[0.2em] uppercase text-lg font-bold hover:text-sand-600 transition-colors">Register</Link>
             </>
           )}
-          <Link
-            href="/book"
+          <a
+            href="/#contact"
             onClick={() => setOpen(false)}
-            className="mt-2 text-center px-6 py-3 bg-sand-600 text-ivory text-xs tracking-widest uppercase font-medium hover:bg-sand-700 transition-colors"
+            className="mt-2 text-center px-8 py-4 rounded-full bg-sand-600 text-ivory text-lg font-bold tracking-[0.2em] uppercase hover:bg-sand-700 transition-colors duration-300"
           >
-            Book Now
-          </Link>
+            Contact Us
+          </a>
         </nav>
       </div>
     </header>

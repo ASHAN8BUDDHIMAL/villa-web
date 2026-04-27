@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import ImageUpload from "@/components/ImageUpload";
 
 type Photo = { _id: string; url: string; caption: string; order: number };
 const empty = { url: "", caption: "", order: 0 };
@@ -23,9 +24,7 @@ export default function AdminGalleryPage() {
   useEffect(() => { load(); }, []);
 
   async function add() {
-    if (!form.url) return setMsg("Image URL is required.");
-    if (!form.url.startsWith('http://') && !form.url.startsWith('https://'))
-      return setMsg("Please enter a valid URL starting with http:// or https://");
+    if (!form.url) return setMsg("Please select an image.");
     const res = await fetch("/api/gallery", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -60,8 +59,8 @@ export default function AdminGalleryPage() {
           <h2 className="font-display text-lg text-stone-800 mb-6">Add Photo</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className={labelCls}>Image URL</label>
-              <input className={inputCls} value={form.url} onChange={e => setForm(f => ({ ...f, url: e.target.value }))} placeholder="https://..." />
+              <label className={labelCls}>Image</label>
+              <ImageUpload value={form.url} onChange={url => setForm(f => ({ ...f, url }))} />
             </div>
             <div>
               <label className={labelCls}>Caption</label>
@@ -76,7 +75,7 @@ export default function AdminGalleryPage() {
             <button onClick={add} className="px-6 py-2.5 bg-sand-600 text-ivory text-xs tracking-widest uppercase hover:bg-sand-700 transition-colors">
               Add Photo
             </button>
-            {msg && <p className={`text-xs ${msg.includes("added") ? "text-green-600" : "text-red-500"}`}>{msg}</p>}
+            {msg && <p className={`text-xs ${msg === "Photo added!" ? "text-green-600" : "text-red-500"}`}>{msg}</p>}
           </div>
         </section>
 
@@ -84,14 +83,14 @@ export default function AdminGalleryPage() {
         <section className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {photos.length === 0 && <p className="text-sm text-stone-400 col-span-3">No photos yet.</p>}
           {photos.map(photo => {
-            const isValidUrl = photo.url && (photo.url.startsWith('http://') || photo.url.startsWith('https://'));
+            const isValid = photo.url.startsWith('http://') || photo.url.startsWith('https://');
             return (
-              <div key={photo._id} className="relative group bg-white border border-stone-200 overflow-hidden">
+              <div key={photo._id} className="bg-white border border-stone-200 overflow-hidden">
                 <div className="relative aspect-square bg-stone-100 flex items-center justify-center">
-                  {isValidUrl ? (
+                  {isValid ? (
                     <Image src={photo.url} alt={photo.caption} fill className="object-cover" sizes="33vw" />
                   ) : (
-                    <p className="text-xs text-stone-400">Invalid URL</p>
+                    <p className="text-xs text-stone-400">No image</p>
                   )}
                 </div>
                 <div className="p-2 flex items-center justify-between">

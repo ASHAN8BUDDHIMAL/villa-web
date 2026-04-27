@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const inputCls = "w-full border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:border-sand-400 focus:bg-white transition-colors";
+const inputCls = "w-full border border-stone-200 bg-stone-50 px-5 py-4 text-sm text-stone-800 placeholder:text-stone-300 focus:outline-none focus:border-sand-400 focus:ring-2 focus:ring-sand-400/20 focus:bg-white transition-all duration-300 rounded-sm";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -43,22 +43,21 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-ivory flex items-center justify-center px-4">
+    <div className="min-h-screen bg-stone-900 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
 
-        {/* Header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-12">
           <Link href="/" className="inline-flex flex-col items-center">
-            <span className="font-display text-3xl text-stone-900">Villa Galle</span>
-            <span className="text-xs tracking-[0.3em] uppercase text-sand-500 mt-1">Southern Coast · Sri Lanka</span>
+            <span className="font-display text-3xl text-ivory">Villa Galle</span>
+            <span className="text-[10px] tracking-[0.35em] uppercase text-sand-500 mt-1.5">Southern Coast · Sri Lanka</span>
           </Link>
         </div>
 
-        <div className="bg-white border border-sand-100 p-8 shadow-sm">
+        <div className="bg-ivory p-10">
           <h1 className="font-display text-2xl text-stone-800 mb-1">Create account</h1>
-          <p className="text-sm text-stone-400 mb-8">Join us to make a reservation</p>
+          <p className="text-sm text-stone-400 mb-10">Join us to make a reservation</p>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5">
             <input
               name="name"
               type="text"
@@ -94,7 +93,7 @@ export default function RegisterPage() {
             />
 
             {error && (
-              <p className="text-red-500 text-xs text-center bg-red-50 py-2 px-3 border border-red-100">
+              <p className="text-red-400 text-xs text-center bg-red-50 py-3 px-4 border border-red-100">
                 {error}
               </p>
             )}
@@ -102,22 +101,22 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 bg-sand-600 text-ivory text-xs tracking-widest uppercase hover:bg-sand-700 transition-colors disabled:opacity-50 mt-2"
+              className="w-full py-4 bg-sand-600 text-ivory text-[10px] tracking-[0.3em] uppercase hover:bg-sand-700 transition-all duration-500 disabled:opacity-50 mt-2"
             >
               {loading ? "Creating account…" : "Create Account"}
             </button>
           </form>
 
-          <p className="text-center text-sm text-stone-400 mt-6">
+          <p className="text-center text-sm text-stone-400 mt-8">
             Already have an account?{" "}
-            <Link href="/login" className="text-sand-600 hover:text-sand-800 transition-colors">
+            <Link href="/login" className="text-sand-600 hover:text-sand-700 transition-colors duration-300">
               Sign in
             </Link>
           </p>
         </div>
 
-        <p className="text-center text-xs text-stone-400 mt-6">
-          <Link href="/" className="hover:text-stone-600 transition-colors">← Back to website</Link>
+        <p className="text-center text-xs text-stone-600 mt-6">
+          <Link href="/" className="hover:text-stone-400 transition-colors duration-300 tracking-widest uppercase text-[10px]">← Back to website</Link>
         </p>
       </div>
     </div>

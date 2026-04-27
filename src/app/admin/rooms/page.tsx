@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import ImageUpload from "@/components/ImageUpload";
 
 type Room = { _id: string; name: string; price: number; image: string; description: string };
 const empty = { name: "", price: 0, image: "", description: "" };
@@ -10,10 +11,10 @@ const labelCls = "text-xs text-stone-500 uppercase tracking-widest mb-1 block";
 
 export default function AdminRoomsPage() {
   const router = useRouter();
-  const [rooms, setRooms]       = useState<Room[]>([]);
-  const [form, setForm]         = useState(empty);
-  const [editing, setEditing]   = useState<string | null>(null);
-  const [msg, setMsg]           = useState("");
+  const [rooms, setRooms]     = useState<Room[]>([]);
+  const [form, setForm]       = useState(empty);
+  const [editing, setEditing] = useState<string | null>(null);
+  const [msg, setMsg]         = useState("");
 
   async function load() {
     const res = await fetch("/api/rooms");
@@ -72,8 +73,8 @@ export default function AdminRoomsPage() {
               <input type="number" className={inputCls} value={form.price} onChange={e => setForm(f => ({ ...f, price: Number(e.target.value) }))} />
             </div>
             <div className="sm:col-span-2">
-              <label className={labelCls}>Image URL</label>
-              <input className={inputCls} value={form.image} onChange={e => setForm(f => ({ ...f, image: e.target.value }))} />
+              <label className={labelCls}>Image</label>
+              <ImageUpload value={form.image} onChange={url => setForm(f => ({ ...f, image: url }))} />
             </div>
             <div className="sm:col-span-2">
               <label className={labelCls}>Description</label>
@@ -85,7 +86,7 @@ export default function AdminRoomsPage() {
               {editing ? "Update Room" : "Add Room"}
             </button>
             {editing && <button onClick={cancel} className="px-6 py-2.5 border border-stone-200 text-stone-500 text-xs tracking-widest uppercase hover:bg-stone-50 transition-colors">Cancel</button>}
-            {msg && <p className={`text-xs ${msg.includes("required") || msg === "Failed." ? "text-red-500" : "text-green-600"}`}>{msg}</p>}
+            {msg && <p className={`text-xs ${msg === "Added!" || msg === "Updated!" ? "text-green-600" : "text-red-500"}`}>{msg}</p>}
           </div>
         </section>
 

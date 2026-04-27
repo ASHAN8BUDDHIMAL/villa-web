@@ -9,13 +9,14 @@ const config: Config = {
     extend: {
       colors: {
         ivory: "#FDFAF5",
+        "ocean-muted": "#6F8F8B",
         sand: {
-          100: "#F0E9DC",
-          200: "#E0D0B8",
-          400: "#C4A882",
+          100: "#F4ECE2",
+          200: "#E8D8C3",
+          400: "#C9A97E",
           500: "#B09060",
           600: "#9A7A4A",
-          700: "#7D6038",
+          700: "#7A5C38",
         },
       },
       transitionTimingFunction: {
