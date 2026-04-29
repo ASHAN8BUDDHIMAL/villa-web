@@ -12,9 +12,9 @@ const defaultHero = { tagline: "Southern Coast · Sri Lanka", title: "Villa Gall
 const defaultFeatures: { icon: string; title: string; desc: string }[] = [];
 
 const staticContactDetails = [
-  { label: "Email",     value: "hello@villagalle.com", href: "mailto:hello@villagalle.com" },
-  { label: "Phone",     value: "+94 00 000 0000",      href: "tel:+94000000000" },
-  { label: "Address",   value: "Galle, Southern Province, Sri Lanka", href: "" },
+  { label: "Email",     value: "villagalle@gmail.com", href: "mailto:villagalle@gmail.com" },
+  { label: "Phone",     value: "+94 710474331",      href: "tel:+94710474331" },
+  { label: "Address",   value: "Villa Galle, Devata Road, Galla,Southern Province", href: "" },
   { label: "Check-in",  value: "From 2:00 PM",         href: "" },
   { label: "Check-out", value: "Until 11:00 AM",       href: "" },
 ];
@@ -58,13 +58,15 @@ export default async function HomePage() {
         <HeroSlider images={hero.images ?? []} autoScroll={hero.autoScroll ?? true} scrollInterval={hero.scrollInterval ?? 5} />
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
           <p className="text-sand-300 text-sm tracking-[0.5em] uppercase mb-10 opacity-90">{hero.tagline}</p>
-          <h1 className="font-display text-7xl md:text-9xl text-ivory leading-[1.0] mb-10 tracking-wide">{hero.title}</h1>
+          <h1 className="font-display text-5xl md:text-7xl text-ivory leading-[1.0] mb-10 tracking-wide">{hero.title}</h1>
           <p className="text-ivory/65 text-xl md:text-2xl leading-relaxed mb-16 max-w-2xl mx-auto font-light">{hero.subtitle}</p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <a href="#contact" className="px-14 py-6 bg-sand-600 text-ivory text-sm tracking-[0.3em] uppercase hover:bg-sand-700 transition-all duration-500">Contact Us</a>
             <a href="#rooms" className="px-14 py-6 border border-ivory/30 text-ivory text-sm tracking-[0.3em] uppercase hover:bg-ivory/10 hover:border-ivory/60 transition-all duration-500">Explore Rooms</a>
           </div>
         </div>
+
+
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 text-ivory/40 z-10">
           <span className="text-xs tracking-[0.4em] uppercase">Scroll</span>
           <div className="w-px h-16 bg-gradient-to-b from-ivory/40 to-transparent animate-pulse" />
@@ -81,10 +83,30 @@ export default async function HomePage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-sand-200">
             {displayFeatures.map((f: { icon?: string; title: string; desc: string }) => (
-              <div key={f.title} className="bg-ivory p-14 hover:bg-sand-100 hover:-translate-y-1 transition-all duration-500 group">
-                <div className="w-10 h-px bg-sand-400 mb-10" />
-                <h3 className="font-display text-3xl text-stone-800 mb-5 group-hover:text-sand-700 transition-colors duration-300">{f.title}</h3>
-                <p className="text-lg text-stone-400 leading-relaxed">{f.desc}</p>
+              <div key={f.title} className="relative overflow-hidden group" style={{ minHeight: "420px" }}>
+                <Image
+                  src={{
+                    "Ocean Views":       "https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=600&q=80",
+                    "Tropical Gardens":  "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=600&q=80",
+                    "Private Dining":    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80",
+                    "Wellness":          "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&q=80",
+                    "Private Pool":      "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=600&q=80",
+                    "Curated Dining":    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&q=80",
+                    "Concierge Service": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80",
+                  }[f.title] ?? "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80"}
+                  alt={f.title}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  className="object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-stone-900/40 group-hover:bg-stone-900/25 transition-all duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-stone-900/90 via-stone-900/20 to-transparent" />
+                <div className="absolute inset-0 flex flex-col justify-end p-10">
+                  <div className="border-l-2 border-sand-400 pl-5">
+                    <h3 className="font-display text-3xl text-ivory mb-3 drop-shadow-lg">{f.title}</h3>
+                    <p className="text-sm text-ivory/80 leading-relaxed drop-shadow-md">{f.desc}</p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -123,11 +145,24 @@ export default async function HomePage() {
             <p className="text-stone-400 text-xl leading-relaxed mb-8">Villa Galle is not a hotel — it is a home. With only three private suites, we offer an intimacy that larger resorts simply cannot match. Every guest is known by name, every preference remembered, every moment elevated.</p>
             <p className="text-stone-400 text-xl leading-relaxed">All rates are inclusive of daily breakfast, afternoon tea, and access to the villa&apos;s shared spaces — the pool terrace, library, and tropical gardens.</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-stone-700">
-            {["Daily Breakfast", "Afternoon Tea", "Pool & Garden Access", "High-Speed Wi-Fi", "Airport Transfer", "Concierge Service", "Turndown Service", "Welcome Amenities"].map(item => (
-              <div key={item} className="bg-stone-900 px-10 py-8 flex items-center gap-5">
-                <span className="w-5 h-px bg-sand-600 shrink-0" />
-                <span className="text-stone-300 text-lg">{item}</span>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-stone-700">
+            {[
+              { label: "Daily Breakfast",      img: "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=600&q=80" },
+              { label: "Afternoon Tea",         img: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80" },
+              { label: "Pool & Garden Access",  img: "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=600&q=80" },
+              { label: "High-Speed Wi-Fi",      img: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=600&q=80" },
+              { label: "Airport Transfer",      img: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80" },
+              { label: "Concierge Service",     img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80" },
+              { label: "Turndown Service",      img: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80" },
+              { label: "Welcome Amenities",     img: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=600&q=80" },
+            ].map(item => (
+              <div key={item.label} className="relative overflow-hidden group" style={{ aspectRatio: "1/1" }}>
+                <Image src={item.img} alt={item.label} fill sizes="25vw" className="object-cover group-hover:scale-110 transition-transform duration-700" />
+                <div className="absolute inset-0 bg-stone-900/55 group-hover:bg-stone-900/30 transition-all duration-500" />
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+                  <span className="w-6 h-px bg-sand-400 mb-4" />
+                  <span className="text-ivory text-center text-base font-semibold tracking-wide leading-snug">{item.label}</span>
+                </div>
               </div>
             ))}
           </div>

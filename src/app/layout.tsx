@@ -67,13 +67,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <p className="text-sm tracking-[0.3em] uppercase text-sand-500 mb-7">Contact</p>
               <ul className="space-y-4 text-stone-500">
                 <li>
-                  <a href="mailto:hello@villagalle.com" className="text-lg hover:text-ivory transition-colors duration-300">hello@villagalle.com</a>
+                  <a href="mailto:hello@villagalle.com" className="text-lg hover:text-ivory transition-colors duration-300">villagalle@gmail.com</a>
                 </li>
                 <li>
-                  <a href="tel:+94000000000" className="text-lg hover:text-ivory transition-colors duration-300">+94 00 000 0000</a>
+                  <a href="tel:+94000000000" className="text-lg hover:text-ivory transition-colors duration-300">+94 710474331</a>
                 </li>
                 <li className="text-lg leading-relaxed">
-                  Galle, Southern Province<br />Sri Lanka
+                  Villa Galle, Devata Road, Galla,Southern Province<br />Sri Lanka
                 </li>
                 <li className="pt-2">
                   <Link href="/#contact" className="inline-block px-6 py-3 border border-sand-700 text-sand-500 text-sm tracking-[0.2em] uppercase hover:bg-sand-600 hover:text-ivory hover:border-sand-600 transition-all duration-500">
