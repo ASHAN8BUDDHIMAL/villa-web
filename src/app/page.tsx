@@ -26,13 +26,15 @@ const staticFeatures = [
   { title: "Concierge Service", desc: "From sunrise yoga to sunset boat tours, our dedicated team curates every detail of your stay with warmth and precision." },
 ];
 
+type WhyUs = { heading: string; body1: string; body2: string; inclusions: { label: string }[] };
+
 export default async function HomePage() {
   let rooms: { _id: unknown; name: string; price: number; image: string; description: string }[] = [];
   let hero = defaultHero;
   let features = defaultFeatures;
   let photos: { url: string; caption: string; span: string }[] = [];
   let contactDetails = staticContactDetails;
-  let whyUs: { heading: string; body1: string; body2: string; inclusions: { label: string }[] } | null = null;
+  let whyUs: WhyUs | null = null;
 
   try {
     await connectDB();
@@ -41,12 +43,15 @@ export default async function HomePage() {
       GalleryPhoto.find().sort({ order: 1 }).lean(),
       SiteContent.findOne().lean(),
     ]);
+    const raw = content as Record<string, unknown> | null;
     rooms    = dbRooms as typeof rooms;
     photos   = dbPhotos as typeof photos;
-    hero     = (content?.hero ?? defaultHero) as typeof defaultHero;
-    features = content?.features ?? defaultFeatures;
-    if (content?.contact?.details?.length) contactDetails = content.contact.details;
-    if (content?.whyUs) whyUs = content.whyUs as typeof whyUs;
+    hero     = ((raw?.hero ?? defaultHero) as typeof defaultHero);
+    features = (raw?.features as typeof features) ?? defaultFeatures;
+    const cd = raw?.contact as { details?: typeof staticContactDetails } | undefined;
+    if (cd?.details?.length) contactDetails = cd.details;
+    const wu = raw?.whyUs as WhyUs | undefined;
+    if (wu?.heading) whyUs = wu;
   } catch {
     // DB unavailable — render with fallback defaults
   }
