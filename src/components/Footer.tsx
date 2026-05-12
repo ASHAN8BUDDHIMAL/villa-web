@@ -1,38 +1,44 @@
-import Link from "next/link";
-import VillaLogo from "@/components/VillaLogo";
-import { connectDB } from "@/lib/mongodb";
-import { SiteContent } from "@/models/SiteContent";
+'use client'
 
-const defaultContact = [
-  { label: "email", value: "villagalle@gmail.com", href: "mailto:villagalle@gmail.com" },
-  { label: "phone", value: "+94 710474331", href: "tel:+94710474331" },
-  { label: "address", value: "Villa Galle, Devata Road, Galla, Southern Province", href: "" },
-];
+import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
+import VillaLogo from '@/components/VillaLogo'
 
+const HIDDEN_ON = ['/login', '/register', '/admin']
+
+type ContactDetail = { label: string; value: string; href: string }
+
+const defaultContact: ContactDetail[] = [
+  { label: 'email',   value: 'villagalle@gmail.com',                               href: 'mailto:villagalle@gmail.com' },
+  { label: 'phone',   value: '+94 710474331',                                      href: 'tel:+94710474331' },
+  { label: 'address', value: 'Villa Galle, Devata Road, Galla, Southern Province', href: '' },
+]
 const defaultFooter = {
-  brandText: "An intimate escape where tropical gardens meet the Indian Ocean — crafted for those who seek stillness, beauty, and the unhurried pace of Sri Lankan coastal life.",
-  tagline: "Galle · Sri Lanka · Est. 2018",
-};
+  brandText: 'An intimate escape where tropical gardens meet the Indian Ocean — crafted for those who seek stillness, beauty, and the unhurried pace of Sri Lankan coastal life.',
+  tagline: 'Galle · Sri Lanka · Est. 2018',
+}
 
-export default async function Footer() {
-  let contactDetails = defaultContact;
-  let footer = defaultFooter;
+export default function Footer() {
+  const pathname = usePathname()
+  const [contactDetails, setContactDetails] = useState<ContactDetail[]>(defaultContact)
+  const [footer, setFooter] = useState(defaultFooter)
 
-  try {
-    await connectDB();
-    const content = await SiteContent.findOne().lean() as {
-      contact?: { details?: { label: string; value: string; href: string }[] };
-      footer?: { brandText?: string; tagline?: string };
-    } | null;
-    if (content?.contact?.details?.length) contactDetails = content.contact.details;
-    if (content?.footer?.brandText) footer = { brandText: content.footer.brandText, tagline: content.footer.tagline ?? defaultFooter.tagline };
-  } catch {
-    // fallback to defaults
-  }
+  useEffect(() => {
+    fetch('/api/site-content')
+      .then(r => r.json())
+      .then(data => {
+        if (data?.contact?.details?.length) setContactDetails(data.contact.details)
+        if (data?.footer?.brandText) setFooter({ brandText: data.footer.brandText, tagline: data.footer.tagline ?? defaultFooter.tagline })
+      })
+      .catch(() => {})
+  }, [])
 
-  const email   = contactDetails.find(d => d.href?.startsWith("mailto:")) ?? contactDetails[0];
-  const phone   = contactDetails.find(d => d.href?.startsWith("tel:"))    ?? contactDetails[1];
-  const address = contactDetails.find(d => !d.href)                       ?? contactDetails[2];
+  if (HIDDEN_ON.some(p => pathname.startsWith(p))) return null
+
+  const email   = contactDetails.find(d => d.href?.startsWith('mailto:')) ?? contactDetails[0]
+  const phone   = contactDetails.find(d => d.href?.startsWith('tel:'))    ?? contactDetails[1]
+  const address = contactDetails.find(d => !d.href)                       ?? contactDetails[2]
 
   return (
     <footer className="bg-stone-900 text-stone-400">
@@ -53,7 +59,7 @@ export default async function Footer() {
         <div>
           <p className="text-sm tracking-[0.3em] uppercase text-sand-500 mb-7">Explore</p>
           <ul className="space-y-4">
-            {[["Rooms", "/#rooms"], ["Gallery", "/#gallery"], ["About", "/#about"], ["Contact", "/#contact"]].map(([label, href]) => (
+            {[['Rooms', '/#rooms'], ['Gallery', '/#gallery'], ['About', '/#about'], ['Contact', '/#contact']].map(([label, href]) => (
               <li key={href}>
                 <Link href={href} className="text-stone-500 text-lg hover:text-ivory transition-colors duration-300">{label}</Link>
               </li>
@@ -65,19 +71,9 @@ export default async function Footer() {
         <div>
           <p className="text-sm tracking-[0.3em] uppercase text-sand-500 mb-7">Contact</p>
           <ul className="space-y-4 text-stone-500">
-            {email && (
-              <li>
-                <a href={email.href} className="text-lg hover:text-ivory transition-colors duration-300">{email.value}</a>
-              </li>
-            )}
-            {phone && (
-              <li>
-                <a href={phone.href} className="text-lg hover:text-ivory transition-colors duration-300">{phone.value}</a>
-              </li>
-            )}
-            {address && (
-              <li className="text-lg leading-relaxed">{address.value}</li>
-            )}
+            {email && <li><a href={email.href} className="text-lg hover:text-ivory transition-colors duration-300">{email.value}</a></li>}
+            {phone && <li><a href={phone.href} className="text-lg hover:text-ivory transition-colors duration-300">{phone.value}</a></li>}
+            {address && <li className="text-lg leading-relaxed">{address.value}</li>}
             <li className="pt-2">
               <Link href="/#contact" className="inline-block px-6 py-3 border border-sand-700 text-sand-500 text-sm tracking-[0.2em] uppercase hover:bg-sand-600 hover:text-ivory hover:border-sand-600 transition-all duration-500">
                 Contact Us
@@ -92,5 +88,5 @@ export default async function Footer() {
         <span className="text-sm tracking-widest uppercase text-stone-600">{footer.tagline}</span>
       </div>
     </footer>
-  );
+  )
 }
