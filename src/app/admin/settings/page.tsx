@@ -4,28 +4,23 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import ImageUpload from "@/components/ImageUpload";
 
-type Feature      = { icon: string; title: string; desc: string };
-type TimelineItem = { year: string; event: string };
-type Value        = { title: string; desc: string };
-type ContactDetail= { label: string; value: string; href: string };
-type Faq          = { q: string; a: string };
-type Amenity      = { title: string; desc: string };
+type Feature       = { icon: string; title: string; desc: string };
+type ContactDetail = { label: string; value: string; href: string };
+type Faq           = { q: string; a: string };
+type Inclusion     = { label: string };
 
 type Content = {
-  hero:      { tagline: string; title: string; subtitle: string; images: string[]; autoScroll: boolean; scrollInterval: number };
-  intro:     string;
-  features:  Feature[];
-  quote:     string;
-  cta:       { title: string; subtitle: string };
-  about:     { story: string[]; timeline: TimelineItem[]; values: Value[] };
-  contact:   { details: ContactDetail[]; faqs: Faq[] };
-  amenities: Amenity[];
+  hero:     { tagline: string; title: string; subtitle: string; images: string[]; autoScroll: boolean; scrollInterval: number };
+  features: Feature[];
+  whyUs:    { heading: string; body1: string; body2: string; inclusions: Inclusion[] };
+  contact:  { heading: string; subtitle: string; details: ContactDetail[]; faqs: Faq[] };
+  footer:   { brandText: string; tagline: string };
 };
 
-const inputCls    = "w-full border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-800 focus:outline-none focus:border-sand-400 focus:bg-white transition-colors";
-const labelCls    = "text-xs text-stone-500 uppercase tracking-widest mb-1 block";
-const addBtnCls   = "text-xs text-sand-600 hover:text-sand-800 tracking-widest uppercase transition-colors border border-sand-300 hover:border-sand-500 px-3 py-1.5";
-const removeBtnCls= "text-xs text-red-400 hover:text-red-600 tracking-widest uppercase transition-colors shrink-0";
+const inputCls     = "w-full border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-800 focus:outline-none focus:border-sand-400 focus:bg-white transition-colors";
+const labelCls     = "text-xs text-stone-500 uppercase tracking-widest mb-1 block";
+const addBtnCls    = "text-xs text-sand-600 hover:text-sand-800 tracking-widest uppercase transition-colors border border-sand-300 hover:border-sand-500 px-3 py-1.5";
+const removeBtnCls = "text-xs text-red-400 hover:text-red-600 tracking-widest uppercase transition-colors shrink-0";
 
 function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -43,18 +38,27 @@ export default function AdminSettingsPage() {
   const [msg, setMsg]         = useState("");
 
   useEffect(() => {
-    fetch("/api/site-content").then(r => r.json()).then((data: Content) => {
-      // ensure arrays exist
-      data.features  = data.features  ?? [];
-      data.amenities = data.amenities ?? [];
-      data.about     = data.about     ?? { story: [], timeline: [], values: [] };
-      data.about.story    = data.about.story    ?? [];
-      data.about.timeline = data.about.timeline ?? [];
-      data.about.values   = data.about.values   ?? [];
-      data.contact   = data.contact   ?? { details: [], faqs: [] };
-      data.contact.details = data.contact.details ?? [];
-      data.contact.faqs    = data.contact.faqs    ?? [];
-      setContent(data);
+    fetch("/api/site-content").then(r => r.json()).then((raw: Partial<Content>) => {
+      setContent({
+        hero: raw.hero ?? { tagline: "", title: "", subtitle: "", images: [], autoScroll: true, scrollInterval: 5 },
+        features: raw.features ?? [],
+        whyUs: {
+          heading:    raw.whyUs?.heading    ?? "",
+          body1:      raw.whyUs?.body1      ?? "",
+          body2:      raw.whyUs?.body2      ?? "",
+          inclusions: raw.whyUs?.inclusions ?? [],
+        },
+        contact: {
+          heading:  raw.contact?.heading  ?? "",
+          subtitle: raw.contact?.subtitle ?? "",
+          details:  raw.contact?.details  ?? [],
+          faqs:     raw.contact?.faqs     ?? [],
+        },
+        footer: {
+          brandText: raw.footer?.brandText ?? "",
+          tagline:   raw.footer?.tagline   ?? "",
+        },
+      });
     });
   }, []);
 
@@ -69,56 +73,46 @@ export default function AdminSettingsPage() {
     setSaving(false);
   }
 
+  if (!content) return (
+    <div className="min-h-screen bg-stone-50 flex items-center justify-center text-stone-400 text-sm">Loading…</div>
+  );
+
   // ── helpers ──
   const setHero = (k: keyof Content["hero"], v: string | boolean | number) =>
     setContent(c => c ? { ...c, hero: { ...c.hero, [k]: v } } : c);
 
-  const setCta = (k: keyof Content["cta"], v: string) =>
-    setContent(c => c ? { ...c, cta: { ...c.cta, [k]: v } } : c);
+  const setWhyUs = (k: keyof Content["whyUs"], v: string) =>
+    setContent(c => c ? { ...c, whyUs: { ...c.whyUs, [k]: v } } : c);
 
-  function listSet<T>(key: keyof Content, idx: number, field: keyof T, val: string) {
-    setContent(c => {
-      if (!c) return c;
-      const arr = [...(c[key] as T[])];
-      arr[idx] = { ...arr[idx], [field]: val };
-      return { ...c, [key]: arr };
-    });
-  }
+  const setContactMeta = (k: "heading" | "subtitle", v: string) =>
+    setContent(c => c ? { ...c, contact: { ...c.contact, [k]: v } } : c);
 
-  function listAdd<T>(key: keyof Content, item: T) {
-    setContent(c => c ? { ...c, [key]: [...(c[key] as T[]), item] } : c);
-  }
+  const setFooter = (k: keyof Content["footer"], v: string) =>
+    setContent(c => c ? { ...c, footer: { ...c.footer, [k]: v } } : c);
 
-  function listRemove(key: keyof Content, idx: number) {
-    setContent(c => c ? { ...c, [key]: (c[key] as unknown[]).filter((_, i) => i !== idx) } : c);
-  }
+  // features
+  const updateFeature = (i: number, k: keyof Feature, v: string) =>
+    setContent(c => { if (!c) return c; const a = [...c.features]; a[i] = { ...a[i], [k]: v }; return { ...c, features: a }; });
+  const removeFeature = (i: number) =>
+    setContent(c => c ? { ...c, features: c.features.filter((_, idx) => idx !== i) } : c);
 
-  function nestedSet<K extends "about" | "contact">(section: K, sub: keyof Content[K], idx: number, field: string, val: string) {
-    setContent(c => {
-      if (!c) return c;
-      const arr = [...(c[section][sub] as Record<string, string>[])];
-      arr[idx] = { ...arr[idx], [field]: val };
-      return { ...c, [section]: { ...c[section], [sub]: arr } };
-    });
-  }
+  // inclusions
+  const updateInclusion = (i: number, v: string) =>
+    setContent(c => { if (!c) return c; const a = [...c.whyUs.inclusions]; a[i] = { label: v }; return { ...c, whyUs: { ...c.whyUs, inclusions: a } }; });
+  const removeInclusion = (i: number) =>
+    setContent(c => c ? { ...c, whyUs: { ...c.whyUs, inclusions: c.whyUs.inclusions.filter((_, idx) => idx !== i) } } : c);
 
-  function nestedAdd<K extends "about" | "contact">(section: K, sub: keyof Content[K], item: object) {
-    setContent(c => {
-      if (!c) return c;
-      return { ...c, [section]: { ...c[section], [sub]: [...(c[section][sub] as object[]), item] } };
-    });
-  }
+  // contact details
+  const updateDetail = (i: number, k: keyof ContactDetail, v: string) =>
+    setContent(c => { if (!c) return c; const a = [...c.contact.details]; a[i] = { ...a[i], [k]: v }; return { ...c, contact: { ...c.contact, details: a } }; });
+  const removeDetail = (i: number) =>
+    setContent(c => c ? { ...c, contact: { ...c.contact, details: c.contact.details.filter((_, idx) => idx !== i) } } : c);
 
-  function nestedRemove<K extends "about" | "contact">(section: K, sub: keyof Content[K], idx: number) {
-    setContent(c => {
-      if (!c) return c;
-      return { ...c, [section]: { ...c[section], [sub]: (c[section][sub] as unknown[]).filter((_, i) => i !== idx) } };
-    });
-  }
-
-if (!content) return (
-    <div className="min-h-screen bg-stone-50 flex items-center justify-center text-stone-400 text-sm">Loading…</div>
-  );
+  // faqs
+  const updateFaq = (i: number, k: keyof Faq, v: string) =>
+    setContent(c => { if (!c) return c; const a = [...c.contact.faqs]; a[i] = { ...a[i], [k]: v }; return { ...c, contact: { ...c.contact, faqs: a } }; });
+  const removeFaq = (i: number) =>
+    setContent(c => c ? { ...c, contact: { ...c.contact, faqs: c.contact.faqs.filter((_, idx) => idx !== i) } } : c);
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -128,11 +122,7 @@ if (!content) return (
           <p className="text-xs text-stone-400 tracking-widest uppercase">Site Settings</p>
         </div>
         <div className="flex items-center gap-4">
-          <button
-            onClick={save}
-            disabled={saving}
-            className="px-6 py-2 bg-sand-600 text-ivory text-xs tracking-widest uppercase hover:bg-sand-700 transition-colors disabled:opacity-50"
-          >
+          <button onClick={save} disabled={saving} className="px-6 py-2 bg-sand-600 text-ivory text-xs tracking-widest uppercase hover:bg-sand-700 transition-colors disabled:opacity-50">
             {saving ? "Saving…" : "Save Changes"}
           </button>
           {msg && <p className={`text-xs ${msg.includes("success") ? "text-green-600" : "text-red-500"}`}>{msg}</p>}
@@ -199,71 +189,106 @@ if (!content) return (
             <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-3 items-start border-b border-stone-100 pb-4">
               <div>
                 <label className={labelCls}>Title</label>
-                <input className={inputCls} value={f.title} onChange={e => listSet<Feature>("features", i, "title", e.target.value)} />
+                <input className={inputCls} value={f.title} onChange={e => updateFeature(i, "title", e.target.value)} />
               </div>
               <div>
                 <label className={labelCls}>Description</label>
-                <input className={inputCls} value={f.desc} onChange={e => listSet<Feature>("features", i, "desc", e.target.value)} />
+                <input className={inputCls} value={f.desc} onChange={e => updateFeature(i, "desc", e.target.value)} />
               </div>
-              <button onClick={() => listRemove("features", i)} className={`${removeBtnCls} mt-5`}>Remove</button>
+              <button onClick={() => removeFeature(i)} className={`${removeBtnCls} mt-5`}>Remove</button>
             </div>
           ))}
-          <button onClick={() => listAdd<Feature>("features", { icon: "", title: "", desc: "" })} className={addBtnCls}>+ Add Feature</button>
+          <button onClick={() => setContent(c => c ? { ...c, features: [...c.features, { icon: "", title: "", desc: "" }] } : c)} className={addBtnCls}>+ Add Feature</button>
         </SectionCard>
 
-        {/* ── CTA ── */}
-        <SectionCard title="CTA Section">
+        {/* ── WHY CHOOSE US ── */}
+        <SectionCard title="Why Choose Us">
           <div>
-            <label className={labelCls}>Title</label>
-            <input className={inputCls} value={content.cta.title} onChange={e => setCta("title", e.target.value)} />
+            <label className={labelCls}>Heading</label>
+            <input className={inputCls} value={content.whyUs.heading} onChange={e => setWhyUs("heading", e.target.value)} />
+          </div>
+          <div>
+            <label className={labelCls}>Paragraph 1</label>
+            <textarea rows={3} className={inputCls} value={content.whyUs.body1} onChange={e => setWhyUs("body1", e.target.value)} />
+          </div>
+          <div>
+            <label className={labelCls}>Paragraph 2</label>
+            <textarea rows={3} className={inputCls} value={content.whyUs.body2} onChange={e => setWhyUs("body2", e.target.value)} />
+          </div>
+          <div>
+            <label className={labelCls}>Inclusions</label>
+            {content.whyUs.inclusions.map((inc, i) => (
+              <div key={i} className="flex gap-3 items-center border-b border-stone-100 pb-3 mb-3">
+                <input className={`${inputCls} flex-1`} value={inc.label} onChange={e => updateInclusion(i, e.target.value)} />
+                <button onClick={() => removeInclusion(i)} className={removeBtnCls}>Remove</button>
+              </div>
+            ))}
+            <button onClick={() => setContent(c => c ? { ...c, whyUs: { ...c.whyUs, inclusions: [...c.whyUs.inclusions, { label: "" }] } } : c)} className={addBtnCls}>+ Add Inclusion</button>
+          </div>
+        </SectionCard>
+
+        {/* ── CONTACT US ── */}
+        <SectionCard title="Contact Us Section">
+          <div>
+            <label className={labelCls}>Heading</label>
+            <input className={inputCls} value={content.contact.heading} onChange={e => setContactMeta("heading", e.target.value)} />
           </div>
           <div>
             <label className={labelCls}>Subtitle</label>
-            <textarea rows={2} className={inputCls} value={content.cta.subtitle} onChange={e => setCta("subtitle", e.target.value)} />
+            <textarea rows={2} className={inputCls} value={content.contact.subtitle} onChange={e => setContactMeta("subtitle", e.target.value)} />
+          </div>
+          <div>
+            <label className={labelCls}>Contact Details</label>
+            {content.contact.details.map((d, i) => (
+              <div key={i} className="grid grid-cols-[120px_1fr_1fr_auto] gap-3 items-end border-b border-stone-100 pb-4 mb-2">
+                <div>
+                  <label className={labelCls}>Label</label>
+                  <input className={inputCls} value={d.label} onChange={e => updateDetail(i, "label", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelCls}>Value</label>
+                  <input className={inputCls} value={d.value} onChange={e => updateDetail(i, "value", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelCls}>Link (href)</label>
+                  <input className={inputCls} value={d.href} placeholder="mailto: / tel: / leave blank" onChange={e => updateDetail(i, "href", e.target.value)} />
+                </div>
+                <button onClick={() => removeDetail(i)} className={`${removeBtnCls} pb-2`}>Remove</button>
+              </div>
+            ))}
+            <button onClick={() => setContent(c => c ? { ...c, contact: { ...c.contact, details: [...c.contact.details, { label: "", value: "", href: "" }] } } : c)} className={addBtnCls}>+ Add Detail</button>
+          </div>
+          <div>
+            <label className={labelCls}>FAQs</label>
+            {content.contact.faqs.map((faq, i) => (
+              <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-3 items-end border-b border-stone-100 pb-4 mb-2">
+                <div>
+                  <label className={labelCls}>Question</label>
+                  <input className={inputCls} value={faq.q} onChange={e => updateFaq(i, "q", e.target.value)} />
+                </div>
+                <div>
+                  <label className={labelCls}>Answer</label>
+                  <input className={inputCls} value={faq.a} onChange={e => updateFaq(i, "a", e.target.value)} />
+                </div>
+                <button onClick={() => removeFaq(i)} className={`${removeBtnCls} pb-2`}>Remove</button>
+              </div>
+            ))}
+            <button onClick={() => setContent(c => c ? { ...c, contact: { ...c.contact, faqs: [...c.contact.faqs, { q: "", a: "" }] } } : c)} className={addBtnCls}>+ Add FAQ</button>
           </div>
         </SectionCard>
 
-        {/* ── CONTACT DETAILS ── */}
-        <SectionCard title="Contact Details">
-          {content.contact.details.map((d, i) => (
-            <div key={i} className="grid grid-cols-[120px_1fr_1fr_auto] gap-3 items-start border-b border-stone-100 pb-4">
-              <div>
-                <label className={labelCls}>Label</label>
-                <input className={inputCls} value={d.label} onChange={e => nestedSet("contact", "details", i, "label", e.target.value)} />
-              </div>
-              <div>
-                <label className={labelCls}>Value</label>
-                <input className={inputCls} value={d.value} onChange={e => nestedSet("contact", "details", i, "value", e.target.value)} />
-              </div>
-              <div>
-                <label className={labelCls}>Link (href)</label>
-                <input className={inputCls} value={d.href} placeholder="mailto: / tel: / blank" onChange={e => nestedSet("contact", "details", i, "href", e.target.value)} />
-              </div>
-              <button onClick={() => nestedRemove("contact", "details", i)} className={`${removeBtnCls} mt-5`}>Remove</button>
-            </div>
-          ))}
-          <button onClick={() => nestedAdd("contact", "details", { label: "", value: "", href: "" })} className={addBtnCls}>+ Add Detail</button>
+        {/* ── FOOTER ── */}
+        <SectionCard title="Footer">
+          <div>
+            <label className={labelCls}>Brand Description</label>
+            <textarea rows={3} className={inputCls} value={content.footer.brandText} onChange={e => setFooter("brandText", e.target.value)} />
+          </div>
+          <div>
+            <label className={labelCls}>Tagline (bottom line)</label>
+            <input className={inputCls} value={content.footer.tagline} onChange={e => setFooter("tagline", e.target.value)} />
+          </div>
         </SectionCard>
 
-        {/* ── AMENITIES ── */}
-        <SectionCard title="Booking — Included Amenities">
-          {content.amenities.map((a, i) => (
-            <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-3 items-start border-b border-stone-100 pb-4">
-              <div>
-                <label className={labelCls}>Title</label>
-                <input className={inputCls} value={a.title} onChange={e => listSet<Amenity>("amenities", i, "title", e.target.value)} />
-              </div>
-              <div>
-                <label className={labelCls}>Description</label>
-                <input className={inputCls} value={a.desc} onChange={e => listSet<Amenity>("amenities", i, "desc", e.target.value)} />
-              </div>
-              <button onClick={() => listRemove("amenities", i)} className={`${removeBtnCls} mt-5`}>Remove</button>
-            </div>
-          ))}
-          <button onClick={() => listAdd<Amenity>("amenities", { title: "", desc: "" })} className={addBtnCls}>+ Add Amenity</button>
-        </SectionCard>
-
-        {/* Bottom save */}
         <div className="flex items-center gap-4 pb-8">
           <button onClick={save} disabled={saving} className="px-8 py-3 bg-sand-600 text-ivory text-xs tracking-widest uppercase hover:bg-sand-700 transition-colors disabled:opacity-50">
             {saving ? "Saving…" : "Save Changes"}

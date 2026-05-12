@@ -32,6 +32,10 @@ const AmenitySchema = new Schema({
   desc:  { type: String, default: "" },
 }, { _id: false });
 
+const InclusionSchema = new Schema({
+  label: { type: String, default: "" },
+}, { _id: false });
+
 const SiteContentSchema = new Schema({
   hero: {
     tagline:        { type: String, default: "" },
@@ -48,14 +52,26 @@ const SiteContentSchema = new Schema({
     title:    { type: String, default: "" },
     subtitle: { type: String, default: "" },
   },
+  whyUs: {
+    heading:    { type: String, default: "" },
+    body1:      { type: String, default: "" },
+    body2:      { type: String, default: "" },
+    inclusions: { type: [InclusionSchema], default: [] },
+  },
+  contact: {
+    heading:  { type: String, default: "" },
+    subtitle: { type: String, default: "" },
+    details:  { type: [ContactDetailSchema], default: [] },
+    faqs:     { type: [FaqSchema], default: [] },
+  },
+  footer: {
+    brandText: { type: String, default: "" },
+    tagline:   { type: String, default: "" },
+  },
   about: {
     story:    { type: [String], default: [] },
     timeline: { type: [TimelineSchema], default: [] },
     values:   { type: [ValueSchema], default: [] },
-  },
-  contact: {
-    details:  { type: [ContactDetailSchema], default: [] },
-    faqs:     { type: [FaqSchema], default: [] },
   },
   amenities: { type: [AmenitySchema], default: [] },
 }, { timestamps: true });

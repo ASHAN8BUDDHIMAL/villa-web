@@ -32,6 +32,7 @@ export default async function HomePage() {
   let features = defaultFeatures;
   let photos: { url: string; caption: string; span: string }[] = [];
   let contactDetails = staticContactDetails;
+  let whyUs: { heading: string; body1: string; body2: string; inclusions: { label: string }[] } | null = null;
 
   try {
     await connectDB();
@@ -45,6 +46,7 @@ export default async function HomePage() {
     hero     = (content?.hero ?? defaultHero) as typeof defaultHero;
     features = content?.features ?? defaultFeatures;
     if (content?.contact?.details?.length) contactDetails = content.contact.details;
+    if (content?.whyUs) whyUs = content.whyUs as typeof whyUs;
   } catch {
     // DB unavailable — render with fallback defaults
   }
@@ -140,23 +142,44 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
           <div>
             <p className="text-sand-500 text-sm tracking-[0.4em] uppercase mb-8">Why Choose Us</p>
-            <h2 className="font-display text-6xl md:text-7xl text-ivory mb-10 leading-tight">An Escape Crafted for the Discerning Traveller</h2>
+            <h2 className="font-display text-6xl md:text-7xl text-ivory mb-10 leading-tight">
+              {whyUs?.heading || "An Escape Crafted for the Discerning Traveller"}
+            </h2>
             <div className="w-14 h-px bg-sand-600 mb-12" />
-            <p className="text-stone-400 text-xl leading-relaxed mb-8">Villa Galle is not a hotel — it is a home. With only three private suites, we offer an intimacy that larger resorts simply cannot match. Every guest is known by name, every preference remembered, every moment elevated.</p>
-            <p className="text-stone-400 text-xl leading-relaxed">All rates are inclusive of daily breakfast, afternoon tea, and access to the villa&apos;s shared spaces — the pool terrace, library, and tropical gardens.</p>
+            <p className="text-stone-400 text-xl leading-relaxed mb-8">
+              {whyUs?.body1 || "Villa Galle is not a hotel — it is a home. With only three private suites, we offer an intimacy that larger resorts simply cannot match. Every guest is known by name, every preference remembered, every moment elevated."}
+            </p>
+            <p className="text-stone-400 text-xl leading-relaxed">
+              {whyUs?.body2 || "All rates are inclusive of daily breakfast, afternoon tea, and access to the villa's shared spaces — the pool terrace, library, and tropical gardens."}
+            </p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-px bg-stone-700">
-            {[
-              { label: "Daily Breakfast",      img: "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=600&q=80" },
-              { label: "Afternoon Tea",         img: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80" },
-              { label: "Pool & Garden Access",  img: "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=600&q=80" },
-              { label: "High-Speed Wi-Fi",      img: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=600&q=80" },
-              { label: "Airport Transfer",      img: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80" },
-              { label: "Concierge Service",     img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80" },
-              { label: "Turndown Service",      img: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80" },
-              { label: "Welcome Amenities",     img: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=600&q=80" },
-            ].map(item => (
-              <div key={item.label} className="relative overflow-hidden group" style={{ aspectRatio: "1/1" }}>
+            {(whyUs?.inclusions?.length
+              ? whyUs.inclusions.map(inc => ({
+                  label: inc.label,
+                  img: ({
+                    "Daily Breakfast":     "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=600&q=80",
+                    "Afternoon Tea":       "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80",
+                    "Pool & Garden Access":"https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=600&q=80",
+                    "High-Speed Wi-Fi":    "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=600&q=80",
+                    "Airport Transfer":    "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80",
+                    "Concierge Service":   "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80",
+                    "Turndown Service":    "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80",
+                    "Welcome Amenities":   "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=600&q=80",
+                  } as Record<string, string>)[inc.label] ?? "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80",
+                }))
+              : [
+                { label: "Daily Breakfast",      img: "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=600&q=80" },
+                { label: "Afternoon Tea",         img: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&q=80" },
+                { label: "Pool & Garden Access",  img: "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?w=600&q=80" },
+                { label: "High-Speed Wi-Fi",      img: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=600&q=80" },
+                { label: "Airport Transfer",      img: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80" },
+                { label: "Concierge Service",     img: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80" },
+                { label: "Turndown Service",      img: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80" },
+                { label: "Welcome Amenities",     img: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=600&q=80" },
+              ]
+            ).map((item, i) => (
+              <div key={i} className="relative overflow-hidden group" style={{ aspectRatio: "1/1" }}>
                 <Image src={item.img} alt={item.label} fill sizes="25vw" className="object-cover group-hover:scale-110 transition-transform duration-700" />
                 <div className="absolute inset-0 bg-stone-900/55 group-hover:bg-stone-900/30 transition-all duration-500" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-4">

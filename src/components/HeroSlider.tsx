@@ -39,6 +39,7 @@ export default function HeroSlider({ images, autoScroll, scrollInterval }: Props
             sizes="100vw"
             className={`object-cover transition-transform duration-[8000ms] ease-out ${i === idx ? "scale-110" : "scale-100"}`}
             priority={i === 0}
+            loading={i === 0 ? "eager" : "lazy"}
           />
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60" />
