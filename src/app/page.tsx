@@ -76,7 +76,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── FEATURES ── */}
-      <section className="bg-ivory py-40 px-6">
+      <section id="experience" className="bg-ivory py-40 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-24">
             <p className="text-sand-400 text-sm tracking-[0.4em] uppercase mb-6">The Experience</p>

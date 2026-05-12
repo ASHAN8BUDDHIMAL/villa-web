@@ -9,11 +9,10 @@ import { useAuth } from '@/lib/useAuth'
 import VillaLogo from '@/components/VillaLogo'
 
 const links = [
-  { label: 'Rooms',   href: '/#rooms' },
-  { label: 'About',   href: '/#about' },
-  { label: 'Gallery', href: '/#gallery' },
- 
-  // { label: 'Contact', href: '/#contact' },
+  { label: 'Experience', href: '/#experience' },
+  { label: 'Rooms',      href: '/#rooms' },
+  { label: 'About',      href: '/#about' },
+  { label: 'Gallery',    href: '/#gallery' },
 ]
 
 const HIDDEN_ON = ['/login', '/register', '/admin']
@@ -78,6 +77,18 @@ export function Navbar() {
             </Link>
           ))}
 
+          <a
+            href="/#contact"
+            className={cn(
+              'px-8 py-3 rounded-full text-base font-bold tracking-[0.2em] uppercase transition-all duration-500',
+              scrolled
+                ? 'bg-sand-600 text-ivory hover:bg-sand-700 shadow-sm hover:shadow-md'
+                : 'border border-ivory/50 text-ivory hover:bg-ivory hover:text-stone-900'
+            )}
+          >
+            Contact Us
+          </a>
+
           {user ? (
             <button
               onClick={logout}
@@ -92,27 +103,14 @@ export function Navbar() {
           ) : (
             <Link
               href="/login"
-              aria-label="Sign in"
               className={cn(
-                'transition-colors duration-300',
+                'flex items-center gap-1.5 text-base font-bold tracking-[0.2em] uppercase transition-colors duration-300',
                 scrolled ? 'text-stone-500 hover:text-sand-600' : 'text-ivory/70 hover:text-ivory'
               )}
             >
-              <User size={16} />
+              <User size={16} /> Login
             </Link>
           )}
-
-          <a
-            href="/#contact"
-            className={cn(
-              'ml-2 px-8 py-3 rounded-full text-base font-bold tracking-[0.2em] uppercase transition-all duration-500',
-              scrolled
-                ? 'bg-sand-600 text-ivory hover:bg-sand-700 shadow-sm hover:shadow-md'
-                : 'border border-ivory/50 text-ivory hover:bg-ivory hover:text-stone-900'
-            )}
-          >
-            Contact Us
-          </a>
         </nav>
 
         {/* Mobile toggle */}
@@ -149,18 +147,8 @@ export function Navbar() {
               Sign Out
             </button>
           ) : (
-            <>
-              <Link href="/login" onClick={() => setOpen(false)} className="text-stone-700 tracking-[0.2em] uppercase text-lg font-bold hover:text-sand-600 transition-colors">Sign In</Link>
-              <Link href="/register" onClick={() => setOpen(false)} className="text-stone-700 tracking-[0.2em] uppercase text-lg font-bold hover:text-sand-600 transition-colors">Register</Link>
-            </>
+            <Link href="/login" onClick={() => setOpen(false)} className="text-stone-700 tracking-[0.2em] uppercase text-lg font-bold hover:text-sand-600 transition-colors">Login</Link>
           )}
-          <a
-            href="/#contact"
-            onClick={() => setOpen(false)}
-            className="mt-2 text-center px-8 py-4 rounded-full bg-sand-600 text-ivory text-lg font-bold tracking-[0.2em] uppercase hover:bg-sand-700 transition-colors duration-300"
-          >
-            Contact Us
-          </a>
         </nav>
       </div>
     </header>
